@@ -42,6 +42,10 @@ fi
 _STORE_AGAVE_USERNAME=
 _STORE_AGAVE_TENANT=
 _STORE_OPENSSL_VERSION=
+_STORE_TENANT_USER_DIGEST=
+# Digest of tenant/username
+# - Used to trivally encrypt your master passwords
+# echo "vaughn.iplantc.org" | openssl dgst -hex -sha256 | awk '{print $2}'
 
 get_agave_uname(){
 	# Retrieve username for current Agave user
@@ -117,6 +121,32 @@ EOM
 
 validate_agave_store_key(){
 	return 0
+}
+
+_get_user_enc_digest(){
+	local _user=
+	local _tenant=$(get_agave_tenant)
+#	local _tenant="iplantc.org"
+	local _digest=
+
+	if [ -n "$1" ];
+	then
+		# [TODO] Validate this is a valid user
+		_user="$1"
+	else
+		_user=$(get_agave_uname)
+	fi
+
+	echo "${_STORE_TENANT_USER_DIGEST}"
+
+	if [ -z "${_STORE_TENANT_USER_DIGEST}" ]
+	then
+		echo "Computing..."
+		local _tmp=$(echo "${_tenant}:${_user}" | openssl dgst -hex -sha256 | awk '{print $2}')
+		export _STORE_TENANT_USER_DIGEST="${_tmp}"
+	fi
+	echo -n "${_STORE_TENANT_USER_DIGEST}"
+
 }
 
 _construct_agave_store_key(){
