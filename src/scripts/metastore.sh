@@ -1,6 +1,10 @@
 #!/bin/env bash
 
-# Implements encrypted key:value store atop the Agave metadata service
+# Implements spine, an encrypted secret store built on the Agave metadata API
+# Syntax and usage inspired by pony [https://github.com/jessfraz/pony]
+
+# spine [global options] command [command options] [arguments...]
+
 
 # Tooling
 # keyval-addupdate -d <value> <key>
@@ -16,6 +20,7 @@
 # [ ] Up to 64 bytes long, excluding the namespace data
 # [ ] Must be URL-safe
 # [ ] Searchable via wildcard
+# [ ] Keys beginning with '_' are private. Not shown in list operations
 
 # Values
 # [x] Any content is acceptable
@@ -31,6 +36,9 @@
 # [x] System can autogenerate a compliant password for a user
 # [ ] Can be stored/retrieved in database
 # [ ] Sharable (read-only) with other users if stored in database
+# [ ] Internally, use a long (32+ char) password decrypted by user's master. Stored in private entry.
+
+# "Cookie Monster" -> encrypts "RANDOMBIGBADPASSPHRASE" -> encrypts Values for keys
 
 # Key:Value Pairs
 # [ ] Shareable )read-only) for reading so long as recipient has password
